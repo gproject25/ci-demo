@@ -47,32 +47,6 @@ jobs:
       - name: Build JAR
         run: ./gradlew bootJar
 
-      - name: Debug actual OIDC claims
-        shell: bash
-        run: |
-          TOKEN_JSON=$(curl -fsS \
-            -H "Authorization: bearer $ACTIONS_ID_TOKEN_REQUEST_TOKEN" \
-            "${ACTIONS_ID_TOKEN_REQUEST_URL}&audience=sts.amazonaws.com")
-
-          ID_TOKEN=$(echo "$TOKEN_JSON" | jq -r '.value')
-
-          PAYLOAD=$(echo "$ID_TOKEN" | cut -d '.' -f2 | tr '_-' '/+')
-          PADDING=$(( (4 - ${#PAYLOAD} % 4) % 4 ))
-          PAYLOAD="${PAYLOAD}$(printf '%*s' "$PADDING" '' | tr ' ' '=')"
-
-          echo "$PAYLOAD" | base64 -d | jq '{
-            iss,
-            aud,
-            sub,
-            repository,
-            repository_id,
-            repository_owner,
-            repository_owner_id,
-            ref,
-            event_name,
-            environment
-          }'
-
       # Step 6: AWS 자격증명 - OIDC
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
