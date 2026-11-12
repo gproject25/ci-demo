@@ -47,12 +47,6 @@ jobs:
       - name: Build JAR
         run: ./gradlew bootJar
 
-      - name: Debug repository IDs
-        run: |
-          echo "Repository: $GITHUB_REPOSITORY"
-          echo "Repository ID: ${{ github.repository_id }}"
-          echo "Owner ID: ${{ github.repository_owner_id }}"
-
       # Step 6: AWS 자격증명 - OIDC
       - name: Configure AWS credentials
         uses: aws-actions/configure-aws-credentials@v6
